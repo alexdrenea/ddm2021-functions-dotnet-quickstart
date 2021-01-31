@@ -1,4 +1,5 @@
 ﻿using Microsoft.Azure.Cosmos;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Net.NetworkInformation;
@@ -12,14 +13,10 @@ namespace azure_functions_dotnet_quickstart.Services
         private readonly CosmosClient _cosmosClient;
         private readonly Container _cosmosContainer;
 
-        public CosmosDbService()
+        public CosmosDbService(IOptions<CosmosDbServiceOptions> options)
         {
-            var database = Environment.GetEnvironmentVariable("CosmosDbDatabase", EnvironmentVariableTarget.Process).ToString();
-            var container = Environment.GetEnvironmentVariable("CosmosDbContainer", EnvironmentVariableTarget.Process).ToString();
-            var connectionString = Environment.GetEnvironmentVariable("CosmosDbConnectionString", EnvironmentVariableTarget.Process).ToString();
-
-            _cosmosClient = new CosmosClient(connectionString);
-            _cosmosContainer = _cosmosClient.GetContainer(database, container);
+            _cosmosClient = new CosmosClient(options.Value.ConnectionString);
+            _cosmosContainer = _cosmosClient.GetContainer(options.Value.DatabaseId, options.Value.ContainerId);
         }
 
         public async Task UpdateItemLocation(string id, string address, string city, Geometry geo)
