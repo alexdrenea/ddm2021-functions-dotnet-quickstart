@@ -1,4 +1,7 @@
-﻿using azure_functions_dotnet_quickstart.Services;
+﻿using Azure.Extensions.AspNetCore.Configuration.Secrets;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+using azure_functions_dotnet_quickstart.Services;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +25,14 @@ namespace azure_functions_dotnet_quickstart
             builder.ConfigurationBuilder
                .AddJsonFile(Path.Combine(context.ApplicationRootPath, $"appsettings.json"), true, true)
                .AddJsonFile(Path.Combine(context.ApplicationRootPath, $"appsettings.{env}.json"), true, true);
+
+
+            var cosmosKeyVaultUrl = Environment.GetEnvironmentVariable("CosmosKeyVaultUrl");
+            if (!string.IsNullOrEmpty(cosmosKeyVaultUrl))
+            {
+                var secretClient = new SecretClient(new Uri(cosmosKeyVaultUrl), new DefaultAzureCredential());
+                builder.ConfigurationBuilder.AddAzureKeyVault(secretClient, new KeyVaultSecretManager());
+            }
 
             builder.ConfigurationBuilder.AddEnvironmentVariables();
             builder.ConfigurationBuilder.Build();
