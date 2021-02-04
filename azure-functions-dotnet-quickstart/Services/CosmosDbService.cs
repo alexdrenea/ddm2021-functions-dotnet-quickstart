@@ -17,6 +17,9 @@ namespace azure_functions_dotnet_quickstart.Services
         {
             _cosmosClient = new CosmosClient(options.Value.ConnectionString);
             _cosmosContainer = _cosmosClient.GetContainer(options.Value.DatabaseId, options.Value.ContainerId);
+
+            _cosmosClient.CreateDatabaseIfNotExistsAsync(options.Value.DatabaseId).GetAwaiter().GetResult();
+            _cosmosContainer.Database.CreateContainerIfNotExistsAsync(new ContainerProperties(options.Value.ContainerId, "/city")).GetAwaiter().GetResult();
         }
 
         public async Task UpdateItemLocation(string id, string address, string city, Geometry geo)

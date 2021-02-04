@@ -27,7 +27,7 @@ namespace azure_functions_dotnet_quickstart
                .AddJsonFile(Path.Combine(context.ApplicationRootPath, $"appsettings.{env}.json"), true, true);
 
 
-            var cosmosKeyVaultUrl = Environment.GetEnvironmentVariable("CosmosKeyVaultUrl");
+            var cosmosKeyVaultUrl = Environment.GetEnvironmentVariable("KeyVaultUrl");
             if (!string.IsNullOrEmpty(cosmosKeyVaultUrl))
             {
                 var secretClient = new SecretClient(new Uri(cosmosKeyVaultUrl), new DefaultAzureCredential());
